@@ -7,19 +7,30 @@ export default function Main() {
   const [ingredients, setIngredient] = React.useState([]);
 
   const [recipe, setRecipe] = React.useState("");
+  const recipeSection = React.useRef(null);
 
   async function getRecipe() {
-    // first change.
-    // setRecipeShown((preShown) => !preShown);
     const recipeMarkdown = await getRecipeFromMistral(ingredients);
     setRecipe(recipeMarkdown);
   }
 
-  // The form action is a function that will be called when the form is submitted
   function handleSubmit(formData) {
     const newIngredient = formData.get("ingredient");
     setIngredient((prevIngredient) => [...prevIngredient, newIngredient]);
   }
+  React.useEffect(() => {
+    if (recipe !== "" && recipeSection.current !== null) {
+      // recipeSection.current.scrollIntoView({
+      //   behavior: "smooth",
+      //   block: "start",
+      // });
+      const yCoord = recipeSection.current.getBoundingClientRect().top;
+      window.scrollTo({
+        top: yCoord,
+        behavior: "smooth",
+      });
+    }
+  }, []);
 
   return (
     <main>
@@ -34,8 +45,9 @@ export default function Main() {
       </form>
 
       <IngrediantsList
+        ref={recipeSection}
         ingredients={ingredients}
-        getRecipe={getRecipe} //
+        getRecipe={getRecipe}
       />
 
       {
